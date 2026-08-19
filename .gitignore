@@ -1,0 +1,9 @@
+# Dependencies
+node_modules/
+
+# Build/test artifacts
+tests/.build/
+
+# Local plugin data (never commit chat history or settings)
+data.json
+history.json

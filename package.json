@@ -1,0 +1,32 @@
+{
+  "name": "workbuddy-obsidian-plugin",
+  "version": "0.1.0",
+  "description": "Obsidian plugin: chat with a locally installed WorkBuddy (Tencent) through its bundled CLI.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production",
+    "build:test": "esbuild src/runtime/protocol.ts --bundle --format=esm --platform=node --outfile=tests/.build/protocol.mjs && esbuild src/runtime/context.ts --bundle --format=esm --platform=node --outfile=tests/.build/context.mjs && esbuild src/runtime/history.ts --bundle --format=esm --platform=node --outfile=tests/.build/history.mjs && esbuild src/runtime/locate.ts --bundle --format=esm --platform=node --outfile=tests/.build/locate.mjs && esbuild src/runtime/i18n.ts --bundle --format=esm --platform=node --outfile=tests/.build/i18n.mjs && esbuild src/runtime/cliArgs.ts --bundle --format=esm --platform=node --outfile=tests/.build/cliArgs.mjs",
+    "test": "npm run build:test && node --test",
+    "smoke:live": "npm run build:test && esbuild src/runtime/cliClient.ts --bundle --format=esm --platform=node --external:child_process --external:fs --external:os --external:path --outfile=tests/.build/cliClient.mjs && node tests/smoke-live.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.ts\""
+  },
+  "keywords": [
+    "obsidian",
+    "workbuddy",
+    "codebuddy",
+    "agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "esbuild": "^0.21.5",
+    "eslint": "^9.39.4",
+    "eslint-plugin-obsidianmd": "^0.3.0",
+    "obsidian": "latest",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^8.61.1"
+  }
+}

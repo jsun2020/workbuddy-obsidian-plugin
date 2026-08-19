@@ -1,0 +1,683 @@
+/* WorkBuddy plugin styles */
+
+.workbuddy-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+}
+
+.workbuddy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.workbuddy-title {
+  font-weight: 600;
+}
+
+.workbuddy-header-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.workbuddy-icon-btn {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.workbuddy-icon-btn:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.workbuddy-tabbar {
+  display: flex;
+  gap: 4px;
+  padding: 6px 8px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.workbuddy-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--background-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: var(--font-ui-smaller);
+}
+
+.workbuddy-tab.is-active {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+
+.workbuddy-tab-label {
+  cursor: pointer;
+}
+
+.workbuddy-tab-close {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.6;
+}
+
+.workbuddy-tab-close:hover {
+  opacity: 1;
+}
+
+.workbuddy-body-host {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.workbuddy-body {
+  display: none;
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: 10px;
+  /* Obsidian's app.css sets `body { user-select: none }`; a custom ItemView
+     inherits it, so the transcript must opt back in to be copyable. Scoped
+     to the message body so the chrome stays unselectable. */
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.workbuddy-body.is-active {
+  display: block;
+}
+
+.workbuddy-msg {
+  margin-bottom: 14px;
+}
+
+.workbuddy-msg-role {
+  font-size: var(--font-ui-smaller);
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.workbuddy-msg-user .workbuddy-msg-content {
+  background: var(--background-secondary);
+  border-radius: 6px;
+  padding: 6px 8px;
+  white-space: pre-wrap;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content {
+  padding: 2px 0;
+}
+
+.workbuddy-msg-content {
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+}
+
+/* ---- Markdown rendering inside assistant bubbles: tighter than reading view */
+
+.workbuddy-msg-assistant .workbuddy-msg-content > *:first-child {
+  margin-top: 0;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content > *:last-child {
+  margin-bottom: 0;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content p,
+.workbuddy-msg-assistant .workbuddy-msg-content ul,
+.workbuddy-msg-assistant .workbuddy-msg-content ol,
+.workbuddy-msg-assistant .workbuddy-msg-content blockquote,
+.workbuddy-msg-assistant .workbuddy-msg-content pre,
+.workbuddy-msg-assistant .workbuddy-msg-content table,
+.workbuddy-msg-assistant .workbuddy-msg-content h1,
+.workbuddy-msg-assistant .workbuddy-msg-content h2,
+.workbuddy-msg-assistant .workbuddy-msg-content h3,
+.workbuddy-msg-assistant .workbuddy-msg-content h4,
+.workbuddy-msg-assistant .workbuddy-msg-content h5,
+.workbuddy-msg-assistant .workbuddy-msg-content h6 {
+  margin: 0.5em 0;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content h1,
+.workbuddy-msg-assistant .workbuddy-msg-content h2,
+.workbuddy-msg-assistant .workbuddy-msg-content h3,
+.workbuddy-msg-assistant .workbuddy-msg-content h4,
+.workbuddy-msg-assistant .workbuddy-msg-content h5,
+.workbuddy-msg-assistant .workbuddy-msg-content h6 {
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content h1 { font-size: 1.25em; }
+.workbuddy-msg-assistant .workbuddy-msg-content h2 { font-size: 1.15em; }
+.workbuddy-msg-assistant .workbuddy-msg-content h3 { font-size: 1.05em; }
+.workbuddy-msg-assistant .workbuddy-msg-content h4,
+.workbuddy-msg-assistant .workbuddy-msg-content h5,
+.workbuddy-msg-assistant .workbuddy-msg-content h6 {
+  font-size: 1em;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content ul,
+.workbuddy-msg-assistant .workbuddy-msg-content ol {
+  padding-inline-start: 1.4em;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content li {
+  margin: 0.15em 0;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content li > p {
+  margin: 0;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content code {
+  font-size: 0.85em;
+  background: var(--background-secondary);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content pre {
+  background: var(--background-secondary);
+  border-radius: 6px;
+  padding: 8px 10px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content pre code {
+  background: transparent;
+  padding: 0;
+  white-space: pre;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content blockquote {
+  border-left: 3px solid var(--background-modifier-border);
+  padding: 0 0.8em;
+  color: var(--text-muted);
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content a {
+  color: var(--text-accent);
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content hr {
+  margin: 0.8em 0;
+  border-color: var(--background-modifier-border);
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content th,
+.workbuddy-msg-assistant .workbuddy-msg-content td {
+  border: 1px solid var(--background-modifier-border);
+  padding: 4px 8px;
+}
+
+.workbuddy-msg-assistant .workbuddy-msg-content th {
+  background: var(--background-secondary);
+}
+
+/* Attached note/selection content on a user bubble - collapsed by default. */
+.workbuddy-attachment {
+  margin-top: 6px;
+  font-size: var(--font-ui-smaller);
+}
+
+.workbuddy-attachment-title {
+  display: inline-block;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.workbuddy-attachment-title:hover {
+  color: var(--text-normal);
+  text-decoration: underline;
+}
+
+.workbuddy-attachment-body {
+  display: none;
+  white-space: pre-wrap;
+  margin-top: 4px;
+  padding: 6px 8px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  color: var(--text-muted);
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.workbuddy-attachment.is-expanded .workbuddy-attachment-body {
+  display: block;
+}
+
+.workbuddy-reasoning {
+  display: none;
+  border-left: 2px solid var(--background-modifier-border);
+  padding: 2px 8px;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+
+.workbuddy-reasoning.is-visible {
+  display: block;
+}
+
+.workbuddy-reasoning-title {
+  display: inline-block;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+  cursor: pointer;
+  user-select: none;
+}
+
+.workbuddy-reasoning-title:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.workbuddy-reasoning-body {
+  display: none;
+  white-space: pre-wrap;
+  margin-top: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.workbuddy-reasoning.is-expanded .workbuddy-reasoning-body {
+  display: block;
+}
+
+.workbuddy-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.workbuddy-tool {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  min-width: 0;
+}
+
+.workbuddy-tool-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.workbuddy-tool-icon svg {
+  width: 13px;
+  height: 13px;
+}
+
+.workbuddy-tool-running .workbuddy-tool-icon svg {
+  animation: workbuddy-spin 1.2s linear infinite;
+}
+
+@keyframes workbuddy-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.workbuddy-tool-completed {
+  color: var(--text-success, var(--text-muted));
+}
+
+.workbuddy-tool-failed {
+  color: var(--text-error);
+}
+
+.workbuddy-tool-name {
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.workbuddy-tool-preview {
+  opacity: 0.75;
+  font-family: var(--font-monospace);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.workbuddy-usage {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+  margin-top: 4px;
+}
+
+.workbuddy-msg-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.workbuddy-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 8px;
+  height: auto;
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  background: transparent;
+  box-shadow: none;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.workbuddy-action-btn:hover {
+  color: var(--text-normal);
+  background: var(--background-modifier-hover);
+}
+
+.workbuddy-action-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.workbuddy-error {
+  color: var(--text-error);
+  background: var(--background-modifier-error);
+  border-radius: 6px;
+  padding: 6px 8px;
+  white-space: pre-wrap;
+  margin-top: 4px;
+}
+
+.workbuddy-context-row {
+  display: flex;
+  gap: 14px;
+  padding: 6px 10px 0;
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+}
+
+.workbuddy-context-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.workbuddy-input-wrap {
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.workbuddy-input {
+  width: 100%;
+  resize: vertical;
+  min-height: 52px;
+  font-family: inherit;
+}
+
+.workbuddy-input-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  gap: 8px;
+}
+
+.workbuddy-input-actions-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.workbuddy-input-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-width: 0;
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+}
+
+.workbuddy-meta-item {
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 1px 4px;
+}
+
+.workbuddy-meta-item:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.workbuddy-meta-model {
+  color: var(--text-accent);
+  font-weight: 600;
+}
+
+.workbuddy-meta-val {
+  color: var(--text-normal);
+}
+
+.workbuddy-meta-perm {
+  border: 1px solid var(--background-modifier-border);
+}
+
+.workbuddy-meta-perm.is-readonly {
+  opacity: 0.7;
+}
+
+.workbuddy-meta-perm.is-full {
+  color: var(--text-error);
+  border-color: var(--text-error);
+}
+
+.workbuddy-hidden {
+  display: none;
+}
+
+.workbuddy-greeting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 120px;
+  padding: 16px;
+}
+
+.workbuddy-greeting-text {
+  font-size: 1.4em;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.workbuddy-folder-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 160px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--background-secondary);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: var(--font-ui-smaller);
+}
+
+.workbuddy-folder-chip:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.workbuddy-folder-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.workbuddy-folder-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.workbuddy-folder-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.workbuddy-status {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+}
+
+.workbuddy-send-btn {
+  padding: 4px 14px;
+}
+
+.workbuddy-send-btn.is-running {
+  background: var(--background-modifier-error, var(--interactive-accent));
+  color: var(--text-on-accent);
+}
+
+.workbuddy-send-btn.is-running:hover {
+  background: var(--text-error);
+}
+
+/* Settings tab */
+.workbuddy-test-result {
+  margin: -6px 0 12px;
+  font-size: var(--font-ui-small);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.workbuddy-test-ok {
+  color: var(--text-success, var(--text-normal));
+}
+
+.workbuddy-test-fail {
+  color: var(--text-error);
+}
+
+.workbuddy-test-tried {
+  margin: 4px 0 0;
+  padding-inline-start: 1.2em;
+  color: var(--text-muted);
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+}
+
+.workbuddy-settings-textarea {
+  width: 100%;
+  min-width: 100%;
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-small);
+}
+
+/* Chat history modal */
+.workbuddy-history-modal h3 {
+  margin: 0 0 10px 0;
+}
+
+.workbuddy-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.workbuddy-history-empty {
+  color: var(--text-muted);
+  padding: 8px 2px;
+}
+
+.workbuddy-history-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.workbuddy-history-row:hover {
+  background: var(--background-modifier-hover);
+}
+
+.workbuddy-history-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.workbuddy-history-title {
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.workbuddy-history-preview {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.workbuddy-history-meta {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.workbuddy-history-del {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+  opacity: 0.7;
+  padding: 2px;
+}
+
+.workbuddy-history-del:hover {
+  color: var(--text-error);
+  opacity: 1;
+}
