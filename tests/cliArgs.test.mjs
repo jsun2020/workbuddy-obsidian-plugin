@@ -1,10 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildCliArgs, permissionArgs, buildStdinMessage, WRITE_TOOLS } from "./.build/cliArgs.mjs";
+import { buildCliArgs, permissionArgs, buildStdinMessage, WRITE_TOOLS, SHELL_TOOLS } from "./.build/cliArgs.mjs";
 
 test("permission modes map to the verified CLI flags", () => {
-  assert.deepEqual(permissionArgs("edits"), ["--permission-mode", "acceptEdits"]);
+  // edits: acceptEdits still exposes shell tools but denies every call in -p
+  // runs - remove them up front so the model uses Glob/Read instead.
+  assert.deepEqual(permissionArgs("edits"), ["--permission-mode", "acceptEdits", "--disallowedTools", "Bash,PowerShell"]);
   assert.deepEqual(permissionArgs("full"), ["--permission-mode", "bypassPermissions"]);
+  for (const t of SHELL_TOOLS) assert.ok(WRITE_TOOLS.includes(t), t);
   const ro = permissionArgs("readonly");
   assert.deepEqual(ro.slice(0, 2), ["--permission-mode", "default"]);
   assert.equal(ro[2], "--disallowedTools");

@@ -15,7 +15,7 @@ import * as os from "os";
 import * as path from "path";
 import { buildCliArgs, buildStdinMessage } from "./cliArgs";
 import { cliNeedsNode, resolveRuntime, type LocateEnv, type RuntimeResolution } from "./locate";
-import { classifyError, StreamJsonParser, type StreamEvent } from "./protocol";
+import { buildDenyResponse, classifyError, StreamJsonParser, type StreamEvent } from "./protocol";
 import type { WorkBuddySettings } from "../settings/types";
 import type { Translate } from "./i18n";
 
@@ -233,7 +233,35 @@ export class WorkBuddyCliClient {
       if (finished || aborted) return;
       for (const ev of events) {
         if (ev.kind === "init" && ev.sessionId) initSessionId = ev.sessionId;
-        if (ev.kind === "result") sawResult = { isError: ev.isError, text: ev.text, sessionId: ev.sessionId };
+        if (ev.kind === "perm_request") {
+          // In stream-json input mode a gated tool is NOT silently denied: the
+          // CLI blocks on a can_use_tool control_request until stdin answers
+          // (forever, even past stdin EOF). Deny so the turn continues with
+          // the allowed tools; the CLI then emits a normal is_error
+          // tool_result and the model keeps going.
+          try {
+            child.stdin?.write(
+              buildDenyResponse(
+                ev.requestId,
+                "This tool is blocked by the user's WorkBuddy permission mode in Obsidian. Do not retry it; continue with the tools you are allowed to use."
+              ),
+              "utf8"
+            );
+          } catch {
+            // child already gone - the close handler reports the outcome
+          }
+          continue; // internal plumbing, not a UI event
+        }
+        if (ev.kind === "result") {
+          sawResult = { isError: ev.isError, text: ev.text, sessionId: ev.sessionId };
+          // The CLI waits for further stream-json input after the result;
+          // close stdin so it exits (verified live).
+          try {
+            child.stdin?.end();
+          } catch {
+            // already closed
+          }
+        }
         cb.onEvent(ev);
       }
     };
@@ -277,11 +305,12 @@ export class WorkBuddyCliClient {
       finish();
     });
 
-    // Feed the prompt and close stdin so the CLI runs exactly one turn.
+    // Feed the prompt. stdin stays OPEN: the CLI may ask permission questions
+    // over the control channel mid-turn (answered in handleEvents), and it is
+    // closed when the result event arrives so the CLI exits.
     try {
       child.stdin?.on("error", () => undefined); // EPIPE if the child dies early
       child.stdin?.write(buildStdinMessage(opts.prompt), "utf8");
-      child.stdin?.end();
     } catch (e) {
       finish(t("err.spawn", { err: (e as Error)?.message || String(e) }));
       killTree(child);

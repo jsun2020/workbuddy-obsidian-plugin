@@ -26,6 +26,7 @@ export type StreamEvent =
   | { kind: "thinking"; text: string }
   | { kind: "tool_start"; id: string; name: string; preview: string }
   | { kind: "tool_end"; id: string; isError: boolean; preview: string }
+  | { kind: "perm_request"; requestId: string; toolName: string; toolUseId: string }
   | { kind: "usage"; inputTokens: number; outputTokens: number }
   | {
       kind: "result";
@@ -196,9 +197,31 @@ export class StreamJsonParser {
         return this.onUser(obj);
       case "result":
         return this.onResult(obj);
+      case "control_request":
+        return this.onControlRequest(obj);
       default:
         return [];
     }
+  }
+
+  /**
+   * With `--input-format stream-json` the CLI does NOT silently deny a gated
+   * tool (that is argv-prompt behaviour): it emits a `can_use_tool`
+   * control_request on stdout and BLOCKS until a control_response arrives on
+   * stdin - forever, even after stdin EOF. The client must answer every one
+   * (see buildDenyResponse) or the turn hangs until the idle timeout.
+   */
+  private onControlRequest(obj: Record<string, unknown>): StreamEvent[] {
+    const req = obj.request;
+    if (!isRecord(req) || req.subtype !== "can_use_tool") return [];
+    return [
+      {
+        kind: "perm_request",
+        requestId: str(obj.request_id),
+        toolName: str(req.tool_name),
+        toolUseId: str(req.tool_use_id)
+      }
+    ];
   }
 
   private onSystem(obj: Record<string, unknown>): StreamEvent[] {
@@ -331,6 +354,25 @@ export class StreamJsonParser {
 }
 
 export type ErrorClass = "auth" | "other";
+
+/**
+ * The stdin line that answers a `can_use_tool` control_request with a denial.
+ * The CLI then emits a normal is_error tool_result for the tool_use and the
+ * model continues the turn with the tools it IS allowed to use (verified live,
+ * prd.md 3.2). `message` is surfaced to the model as the rejection reason.
+ */
+export function buildDenyResponse(requestId: string, message: string): string {
+  return (
+    JSON.stringify({
+      type: "control_response",
+      response: {
+        subtype: "success",
+        request_id: requestId,
+        response: { behavior: "deny", message }
+      }
+    }) + "\n"
+  );
+}
 
 /**
  * Classify a raw CLI error message so the UI can show a plain-language hint

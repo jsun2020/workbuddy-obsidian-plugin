@@ -15,11 +15,19 @@ export interface CliArgOptions {
 }
 
 /**
+ * Shell tools. In "edits" mode acceptEdits still exposes them to the model but
+ * denies every call in non-interactive runs, so the model burns its turn on a
+ * doomed Bash attempt. Removing them from the tool list up front makes the
+ * model reach for Glob/Read/Grep instead.
+ */
+export const SHELL_TOOLS = ["Bash", "PowerShell"];
+
+/**
  * Tools that can change the machine. In read-only mode they are removed from
  * the model's tool list up front (default mode would deny them anyway in
  * non-interactive runs, but the model then burns turns retrying).
  */
-export const WRITE_TOOLS = ["Write", "Edit", "MultiEdit", "NotebookEdit", "Bash", "PowerShell", "ImageGen"];
+export const WRITE_TOOLS = ["Write", "Edit", "MultiEdit", "NotebookEdit", ...SHELL_TOOLS, "ImageGen"];
 
 /** Map a permission mode to the CLI flags (verified behaviours, prd.md 3.2). */
 export function permissionArgs(mode: PermissionMode): string[] {
@@ -30,7 +38,7 @@ export function permissionArgs(mode: PermissionMode): string[] {
       return ["--permission-mode", "bypassPermissions"];
     case "edits":
     default:
-      return ["--permission-mode", "acceptEdits"];
+      return ["--permission-mode", "acceptEdits", "--disallowedTools", SHELL_TOOLS.join(",")];
   }
 }
 

@@ -413,8 +413,12 @@
 }
 
 .workbuddy-error {
+  /* --text-error and --background-modifier-error are the SAME red in the
+     default theme - a solid error background makes the text invisible.
+     Use a translucent wash + border so the message always reads. */
   color: var(--text-error);
-  background: var(--background-modifier-error);
+  background: color-mix(in srgb, var(--background-modifier-error) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--background-modifier-error) 45%, transparent);
   border-radius: 6px;
   padding: 6px 8px;
   white-space: pre-wrap;

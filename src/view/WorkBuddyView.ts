@@ -553,6 +553,11 @@ export class WorkBuddyView extends ItemView {
 
     const finishTurn = (finalText: string, errorMsg?: string) => {
       tab.handle = null;
+      // A tool line still spinning when the turn ends was denied or abandoned
+      // (denied tools get no tool_result event) - never leave an eternal spinner.
+      for (const line of toolLines.values()) {
+        if (line.classList.contains("workbuddy-tool-running")) this.updateToolLine(line, "failed", "");
+      }
       if (errorMsg) {
         assistant.contentEl.createDiv({ cls: "workbuddy-error", text: errorMsg });
       }

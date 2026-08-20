@@ -1,8 +1,31 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { StreamJsonParser, toolPreview, relativeToCwd, classifyError } from "./.build/protocol.mjs";
+import { StreamJsonParser, toolPreview, relativeToCwd, classifyError, buildDenyResponse } from "./.build/protocol.mjs";
 
 const line = (o) => JSON.stringify(o) + "\n";
+
+test("can_use_tool control_request emits perm_request (live-captured shape)", () => {
+  const p = new StreamJsonParser("");
+  // Verbatim from a live acceptEdits run that asked to use Bash.
+  const events = p.feed(
+    '{"type":"control_request","request_id":"perm_1787213513564_1","request":{"subtype":"can_use_tool","tool_name":"Bash","input":{"command":"dir","description":"List directory contents"},"tool_use_id":"call_8f812a779cd34bfd9490f524"}}\n'
+  );
+  assert.deepEqual(events, [
+    { kind: "perm_request", requestId: "perm_1787213513564_1", toolName: "Bash", toolUseId: "call_8f812a779cd34bfd9490f524" }
+  ]);
+  // Other control_request subtypes are not permission questions - ignored.
+  assert.deepEqual(p.feed(line({ type: "control_request", request_id: "x", request: { subtype: "initialize" } })), []);
+});
+
+test("buildDenyResponse is one NDJSON control_response line the CLI accepts", () => {
+  const s = buildDenyResponse("perm_1", "not allowed");
+  assert.ok(s.endsWith("\n"));
+  const obj = JSON.parse(s);
+  assert.equal(obj.type, "control_response");
+  assert.equal(obj.response.subtype, "success");
+  assert.equal(obj.response.request_id, "perm_1");
+  assert.deepEqual(obj.response.response, { behavior: "deny", message: "not allowed" });
+});
 
 test("init event carries session id, model, tools, permission mode", () => {
   const p = new StreamJsonParser("C:\\vault");
