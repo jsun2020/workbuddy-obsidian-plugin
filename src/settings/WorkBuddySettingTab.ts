@@ -14,6 +14,10 @@ export class WorkBuddySettingTab extends PluginSettingTab {
   }
 
   display(): void {
+    this.render();
+  }
+
+  private render(): void {
     const { containerEl } = this;
     const t = (k: string, v?: Record<string, string | number>) => this.plugin.t(k, v);
     containerEl.empty();
@@ -236,11 +240,8 @@ export class WorkBuddySettingTab extends PluginSettingTab {
             this.plugin.settings.language = v as LangSetting;
             await this.plugin.saveSettings();
             this.plugin.applyLanguageChange();
-            // Re-render this tab in the new language. display() is deprecated in
-            // favour of getSettingDefinitions() (Obsidian 1.13+), which is newer
-            // than our minAppVersion.
-            // eslint-disable-next-line @typescript-eslint/no-deprecated
-            this.display();
+            // Re-render this tab in the new language.
+            this.render();
           })
       );
 
